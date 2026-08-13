@@ -34,4 +34,15 @@ public class UserService {
         User savedUser = userRepository.save(user);
         return new UserResponseDTO(savedUser);
     }
+
+    public User authenticate(String email, String rawPassword) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Credenciais inválidas"));
+
+        if (!passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
+            throw new IllegalArgumentException("Credenciais inválidas");
+        }
+
+        return user;
+    }
 }
