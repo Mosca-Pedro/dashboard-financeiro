@@ -23,3 +23,9 @@ server:
 jwt:
   secret: change-this-secret-in-production
   expiration-ms: 86400000
+
+  server:
+    port: 8080
+    error:
+      include-message: always
+      include-binding-errors: always
