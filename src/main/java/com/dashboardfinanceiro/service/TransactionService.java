@@ -7,6 +7,7 @@ import com.dashboardfinanceiro.entity.User;
 import com.dashboardfinanceiro.repository.TransactionRepository;
 import com.dashboardfinanceiro.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,11 +18,16 @@ public class TransactionService {
 
     private final TransactionRepository transactionRepository;
     private final UserRepository userRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Autowired
-    public TransactionService(TransactionRepository transactionRepository, UserRepository userRepository) {
+    public TransactionService(
+            TransactionRepository transactionRepository,
+            UserRepository userRepository,
+            SimpMessagingTemplate messagingTemplate) {
         this.transactionRepository = transactionRepository;
         this.userRepository = userRepository;
+        this.messagingTemplate = messagingTemplate;
     }
 
     public TransactionResponseDTO create(Long userId, TransactionRequestDTO dto) {
@@ -36,7 +42,11 @@ public class TransactionService {
         transaction.setPricePerUnit(dto.getPricePerUnit());
 
         Transaction saved = transactionRepository.save(transaction);
-        return new TransactionResponseDTO(saved);
+        TransactionResponseDTO response = new TransactionResponseDTO(saved);
+
+        messagingTemplate.convertAndSend("/topic/users/" + userId + "/transactions", response);
+
+        return response;
     }
 
     public List<TransactionResponseDTO> listByUser(Long userId) {
@@ -49,4 +59,3 @@ public class TransactionService {
                 .collect(Collectors.toList());
     }
 }
-
