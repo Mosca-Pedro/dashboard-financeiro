@@ -1,5 +1,6 @@
 package com.dashboardfinanceiro.controller;
 
+import com.dashboardfinanceiro.config.SecurityUtils;
 import com.dashboardfinanceiro.dto.TransactionRequestDTO;
 import com.dashboardfinanceiro.dto.TransactionResponseDTO;
 import com.dashboardfinanceiro.service.TransactionService;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/users/{userId}/transactions")
+@RequestMapping("/api/transactions")
 public class TransactionController {
 
     private final TransactionService transactionService;
@@ -23,15 +24,15 @@ public class TransactionController {
     }
 
     @PostMapping
-    public ResponseEntity<TransactionResponseDTO> create(
-            @PathVariable Long userId,
-            @Valid @RequestBody TransactionRequestDTO dto) {
+    public ResponseEntity<TransactionResponseDTO> create(@Valid @RequestBody TransactionRequestDTO dto) {
+        Long userId = SecurityUtils.getAuthenticatedUserId();
         TransactionResponseDTO response = transactionService.create(userId, dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
-    public ResponseEntity<List<TransactionResponseDTO>> list(@PathVariable Long userId) {
+    public ResponseEntity<List<TransactionResponseDTO>> list() {
+        Long userId = SecurityUtils.getAuthenticatedUserId();
         List<TransactionResponseDTO> transactions = transactionService.listByUser(userId);
         return ResponseEntity.ok(transactions);
     }

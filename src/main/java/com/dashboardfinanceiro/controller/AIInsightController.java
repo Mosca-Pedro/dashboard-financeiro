@@ -1,5 +1,6 @@
 package com.dashboardfinanceiro.controller;
 
+import com.dashboardfinanceiro.config.SecurityUtils;
 import com.dashboardfinanceiro.dto.AIInsightResponseDTO;
 import com.dashboardfinanceiro.service.AIInsightService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,9 @@ public class AIInsightController {
         this.aiInsightService = aiInsightService;
     }
 
-    @GetMapping("/api/users/{userId}/insights")
-    public ResponseEntity<List<AIInsightResponseDTO>> list(@PathVariable Long userId) {
+    @GetMapping("/api/insights")
+    public ResponseEntity<List<AIInsightResponseDTO>> list() {
+        Long userId = SecurityUtils.getAuthenticatedUserId();
         List<AIInsightResponseDTO> insights = aiInsightService.listByUser(userId);
         return ResponseEntity.ok(insights);
     }
