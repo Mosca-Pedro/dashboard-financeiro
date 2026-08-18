@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Plus } from 'lucide-react'
 import api from '../services/api'
 import TransactionForm from '../components/TransactionForm'
+import AllocationChart from '../components/AllocationChart'
 
 function Dashboard() {
   const [summary, setSummary] = useState(null)
@@ -102,35 +103,41 @@ function Dashboard() {
         </div>
       </div>
 
-      <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold">Transações Recentes</h2>
-          <button
-            onClick={() => setShowForm(true)}
-            className="flex items-center gap-2 bg-neon-cyan text-background font-semibold rounded-lg px-4 py-2 text-sm hover:opacity-90 transition"
-          >
-            <Plus size={16} />
-            Nova Transação
-          </button>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
+        <div className="lg:col-span-1">
+          <AllocationChart assets={summary?.assets} />
         </div>
 
-        {transactions.length === 0 ? (
-          <p className="text-white/40">Nenhuma transação ainda.</p>
-        ) : (
-          <div className="flex flex-col gap-2">
-            {transactions.map((tx) => (
-              <div
-                key={tx.id}
-                className="flex items-center justify-between border-b border-white/5 py-2 text-sm"
-              >
-                <span className="font-medium">{tx.type}</span>
-                <span>{tx.assetSymbol}</span>
-                <span className="text-white/60">{tx.amount}</span>
-                <span className="text-white/60">R$ {tx.pricePerUnit}</span>
-              </div>
-            ))}
+        <div className="lg:col-span-2 backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold">Transações Recentes</h2>
+            <button
+              onClick={() => setShowForm(true)}
+              className="flex items-center gap-2 bg-neon-cyan text-background font-semibold rounded-lg px-4 py-2 text-sm hover:opacity-90 transition"
+            >
+              <Plus size={16} />
+              Nova Transação
+            </button>
           </div>
-        )}
+
+          {transactions.length === 0 ? (
+            <p className="text-white/40">Nenhuma transação ainda.</p>
+          ) : (
+            <div className="flex flex-col gap-2">
+              {transactions.map((tx) => (
+                <div
+                  key={tx.id}
+                  className="flex items-center justify-between border-b border-white/5 py-2 text-sm"
+                >
+                  <span className="font-medium">{tx.type}</span>
+                  <span>{tx.assetSymbol}</span>
+                  <span className="text-white/60">{tx.amount}</span>
+                  <span className="text-white/60">R$ {tx.pricePerUnit}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {showForm && (
