@@ -5,6 +5,7 @@ import api from '../services/api'
 import TransactionForm from '../components/TransactionForm'
 import AllocationChart from '../components/AllocationChart'
 import InsightsFeed from '../components/InsightsFeed'
+import ReportActions from '../components/ReportActions'
 import useWebSocket from '../hooks/useWebSocket'
 
 function Dashboard() {
@@ -164,6 +165,10 @@ function Dashboard() {
       </div>
 
       <InsightsFeed insights={insights} onRefresh={fetchData} />
+
+      <div className="mt-8">
+        <ReportActions />
+      </div>
 
       {showForm && (
         <TransactionForm
