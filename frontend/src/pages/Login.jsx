@@ -18,6 +18,7 @@ function Login() {
       const response = await api.post('/auth/login', { email, password })
       localStorage.setItem('token', response.data.token)
       localStorage.setItem('userName', response.data.name)
+      localStorage.setItem('userId', response.data.userId)
       navigate('/dashboard')
     } catch (err) {
       setError('E-mail ou senha inválidos')

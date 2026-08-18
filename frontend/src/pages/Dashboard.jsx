@@ -1,27 +1,34 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus } from 'lucide-react'
 import api from '../services/api'
 import TransactionForm from '../components/TransactionForm'
 import AllocationChart from '../components/AllocationChart'
+import InsightsFeed from '../components/InsightsFeed'
+import useWebSocket from '../hooks/useWebSocket'
 
 function Dashboard() {
   const [summary, setSummary] = useState(null)
   const [transactions, setTransactions] = useState([])
+  const [insights, setInsights] = useState([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
+  const [liveUpdate, setLiveUpdate] = useState(false)
   const navigate = useNavigate()
 
   const userName = localStorage.getItem('userName') || 'usuário'
+  const userId = localStorage.getItem('userId')
 
-  async function fetchData() {
+  const fetchData = useCallback(async () => {
     try {
-      const [summaryRes, transactionsRes] = await Promise.all([
+      const [summaryRes, transactionsRes, insightsRes] = await Promise.all([
         api.get('/portfolio/summary'),
         api.get('/transactions'),
+        api.get('/insights'),
       ])
       setSummary(summaryRes.data)
       setTransactions(transactionsRes.data)
+      setInsights(insightsRes.data)
     } catch (err) {
       if (err.response?.status === 401 || err.response?.status === 403) {
         localStorage.removeItem('token')
@@ -30,7 +37,7 @@ function Dashboard() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [navigate])
 
   useEffect(() => {
     const token = localStorage.getItem('token')
@@ -39,11 +46,20 @@ function Dashboard() {
       return
     }
     fetchData()
-  }, [navigate])
+  }, [navigate, fetchData])
+
+  const handleLiveTransaction = useCallback(() => {
+    setLiveUpdate(true)
+    fetchData()
+    setTimeout(() => setLiveUpdate(false), 2000)
+  }, [fetchData])
+
+  useWebSocket(userId, handleLiveTransaction)
 
   function handleLogout() {
     localStorage.removeItem('token')
     localStorage.removeItem('userName')
+    localStorage.removeItem('userId')
     navigate('/')
   }
 
@@ -68,9 +84,16 @@ function Dashboard() {
   return (
     <div className="min-h-screen bg-background text-white p-6">
       <header className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-semibold text-neon-cyan">
-          Dashboard Financeiro
-        </h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl font-semibold text-neon-cyan">
+            Dashboard Financeiro
+          </h1>
+          {liveUpdate && (
+            <span className="text-xs bg-neon-green/20 text-neon-green rounded-full px-3 py-1 animate-pulse">
+              atualizado em tempo real
+            </span>
+          )}
+        </div>
         <div className="flex items-center gap-4">
           <span className="text-white/60">Olá, {userName}</span>
           <button
@@ -139,6 +162,8 @@ function Dashboard() {
           )}
         </div>
       </div>
+
+      <InsightsFeed insights={insights} onRefresh={fetchData} />
 
       {showForm && (
         <TransactionForm
