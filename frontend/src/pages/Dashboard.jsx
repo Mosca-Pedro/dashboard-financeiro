@@ -1,14 +1,35 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Plus } from 'lucide-react'
 import api from '../services/api'
+import TransactionForm from '../components/TransactionForm'
 
 function Dashboard() {
   const [summary, setSummary] = useState(null)
   const [transactions, setTransactions] = useState([])
   const [loading, setLoading] = useState(true)
+  const [showForm, setShowForm] = useState(false)
   const navigate = useNavigate()
 
   const userName = localStorage.getItem('userName') || 'usuário'
+
+  async function fetchData() {
+    try {
+      const [summaryRes, transactionsRes] = await Promise.all([
+        api.get('/portfolio/summary'),
+        api.get('/transactions'),
+      ])
+      setSummary(summaryRes.data)
+      setTransactions(transactionsRes.data)
+    } catch (err) {
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        localStorage.removeItem('token')
+        navigate('/')
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
     const token = localStorage.getItem('token')
@@ -16,25 +37,6 @@ function Dashboard() {
       navigate('/')
       return
     }
-
-    async function fetchData() {
-      try {
-        const [summaryRes, transactionsRes] = await Promise.all([
-          api.get('/portfolio/summary'),
-          api.get('/transactions'),
-        ])
-        setSummary(summaryRes.data)
-        setTransactions(transactionsRes.data)
-      } catch (err) {
-        if (err.response?.status === 401 || err.response?.status === 403) {
-          localStorage.removeItem('token')
-          navigate('/')
-        }
-      } finally {
-        setLoading(false)
-      }
-    }
-
     fetchData()
   }, [navigate])
 
@@ -42,6 +44,12 @@ function Dashboard() {
     localStorage.removeItem('token')
     localStorage.removeItem('userName')
     navigate('/')
+  }
+
+  function handleTransactionSuccess() {
+    setShowForm(false)
+    setLoading(true)
+    fetchData()
   }
 
   const maiorAlocacao = summary?.assets?.length
@@ -95,7 +103,17 @@ function Dashboard() {
       </div>
 
       <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-6">
-        <h2 className="text-lg font-semibold mb-4">Transações Recentes</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold">Transações Recentes</h2>
+          <button
+            onClick={() => setShowForm(true)}
+            className="flex items-center gap-2 bg-neon-cyan text-background font-semibold rounded-lg px-4 py-2 text-sm hover:opacity-90 transition"
+          >
+            <Plus size={16} />
+            Nova Transação
+          </button>
+        </div>
+
         {transactions.length === 0 ? (
           <p className="text-white/40">Nenhuma transação ainda.</p>
         ) : (
@@ -114,6 +132,13 @@ function Dashboard() {
           </div>
         )}
       </div>
+
+      {showForm && (
+        <TransactionForm
+          onSuccess={handleTransactionSuccess}
+          onClose={() => setShowForm(false)}
+        />
+      )}
     </div>
   )
 }
