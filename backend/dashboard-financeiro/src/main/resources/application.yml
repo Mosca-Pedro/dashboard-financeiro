@@ -3,9 +3,9 @@ spring:
     name: dashboard-financeiro
 
   datasource:
-    url: jdbc:mysql://localhost:3306/dashboard_financeiro?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-    username: root
-    password: 271121
+    url: ${DB_URL:jdbc:mysql://localhost:3306/dashboard_financeiro?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:271121}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -30,13 +30,13 @@ spring:
             enable: true
 
 server:
-  port: 8080
+  port: ${PORT:8080}
   error:
     include-message: always
     include-binding-errors: always
 
 jwt:
-  secret: 8f2a9c4e7b1d6f3a5e8c0b4d7f1a3e6c9b2d5f8a1c4e7b0d3f6a9c2e5b8d1f4a
+  secret: ${JWT_SECRET:8f2a9c4e7b1d6f3a5e8c0b4d7f1a3e6c9b2d5f8a1c4e7b0d3f6a9c2e5b8d1f4a}
   expiration-ms: 86400000
 
 ai:
