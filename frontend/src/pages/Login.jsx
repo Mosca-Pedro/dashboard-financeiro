@@ -63,6 +63,12 @@ function Login() {
         </form>
 
         <p className="text-white/50 text-sm mt-4 text-center">
+          <Link to="/forgot-password" className="text-neon-cyan hover:underline">
+            Esqueci minha senha
+          </Link>
+        </p>
+
+        <p className="text-white/50 text-sm mt-2 text-center">
           Não tem conta?{' '}
           <Link to="/register" className="text-neon-cyan hover:underline">
             Criar conta
