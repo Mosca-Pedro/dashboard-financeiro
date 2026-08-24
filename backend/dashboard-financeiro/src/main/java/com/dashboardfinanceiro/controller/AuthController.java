@@ -1,7 +1,9 @@
 package com.dashboardfinanceiro.controller;
 
+import com.dashboardfinanceiro.dto.ForgotPasswordRequestDTO;
 import com.dashboardfinanceiro.dto.LoginRequestDTO;
 import com.dashboardfinanceiro.dto.LoginResponseDTO;
+import com.dashboardfinanceiro.dto.ResetPasswordRequestDTO;
 import com.dashboardfinanceiro.entity.User;
 import com.dashboardfinanceiro.service.JwtService;
 import com.dashboardfinanceiro.service.UserService;
@@ -39,5 +41,17 @@ public class AuthController {
         );
 
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@Valid @RequestBody ForgotPasswordRequestDTO dto) {
+        userService.forgotPassword(dto.getEmail());
+        return ResponseEntity.ok("Se o e-mail existir, um link de recuperação foi enviado.");
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@Valid @RequestBody ResetPasswordRequestDTO dto) {
+        userService.resetPassword(dto.getToken(), dto.getNewPassword());
+        return ResponseEntity.ok("Senha redefinida com sucesso.");
     }
 }
