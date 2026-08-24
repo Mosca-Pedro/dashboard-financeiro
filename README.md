@@ -2,7 +2,7 @@
 
 Aplicação fullstack em tempo real para gestão de carteira de investimentos e criptoativos, com um agente de IA que analisa riscos de concentração e sugere rebalanceamento.
 
-**Acesse:** [dashboard-financeiro-9qwze5tmo-pedro-061e.vercel.app](https://dashboard-financeiro-9qwze5tmo-pedro-061e.vercel.app/)
+**Acesse:** [dashboard-financeiro-two-psi.vercel.app](https://dashboard-financeiro-two-psi.vercel.app/)
 
 > Obs: o backend roda em um plano gratuito (Render) e pode levar até 1 minuto para "acordar" no primeiro acesso.
 
