@@ -11,11 +11,12 @@ Aplicação fullstack em tempo real para gestão de carteira de investimentos e 
 ## Funcionalidades
 
 - **Autenticação JWT** — registro, login e proteção de rotas
+- **Recuperação de senha** — solicitação por e-mail com link temporário (válido por 1 hora)
 - **Gestão de carteira** — registro de compras, vendas, depósitos e saques
 - **Cálculo automático** — quantidade líquida, preço médio ponderado e total investido por ativo
 - **Gráfico de alocação** — visualização interativa da distribuição da carteira
 - **Agente de IA** — análise de risco de concentração via API da Groq (Llama 3.3), com pareceres em linguagem natural
-- **Tempo real** — atualizações instantâneas via WebSocket (STOMP), sem precisar recarregar a página
+- **Tempo real — atualizações** instantâneas via WebSocket (STOMP), sem precisar recarregar a página
 - **Relatórios em PDF** — geração e download do resumo da carteira
 - **Envio por e-mail** — relatório enviado automaticamente para o usuário
 - **UI Glassmorphism** — interface dark mode com efeito de vidro fosco
@@ -55,15 +56,12 @@ Frontend (React/Vite) → API REST (Spring Boot) → MySQL
 ↘ WebSocket (tempo real)
 ↘ Groq API (análise de IA)
 
-
 O backend segue uma arquitetura em camadas:
-
-Controller → Service → Repository → Entity → Banco de Dado
 
 
 - **entity/** — mapeamento JPA das tabelas (User, Transaction, AIInsight)
 - **repository/** — interfaces de acesso a dados
-- **service/** — regras de negócio (cálculo de carteira, autenticação, geração de PDF, integração com IA)
+- **service/** — regras de negócio (cálculo de carteira, autenticação, recuperação de senha, geração de PDF, integração com IA)
 - **dto/** — objetos de entrada/saída da API
 - **controller/** — endpoints REST
 - **config/** — segurança, JWT, WebSocket
@@ -75,6 +73,7 @@ Controller → Service → Repository → Entity → Banco de Dado
 - Senhas criptografadas com BCrypt
 - Autenticação stateless via JWT (token no header `Authorization: Bearer`)
 - Usuário identificado automaticamente pelo token em toda rota autenticada — nenhum dado sensível depende de parâmetros vindos do cliente
+- Recuperação de senha via token único com expiração de 1 hora, invalidado após o uso
 - Credenciais e chaves de API nunca versionadas no código — resolvidas via variáveis de ambiente
 
 ---
@@ -104,14 +103,15 @@ npm run dev
 
 ## Roteiro do projeto
 
-- [x] Modelagem e API REST completa
-- [x] Autenticação JWT
-- [x] Cálculo de carteira
-- [x] WebSocket em tempo real
-- [x] Agente de IA (Groq)
-- [x] Exportação de PDF e envio por e-mail
-- [x] Frontend completo (React + Tailwind)
-- [x] Deploy em produção (Render + Vercel + Aiven)
+-  Modelagem e API REST completa
+-  Autenticação JWT
+-  Recuperação de senha
+-  Cálculo de carteira
+-  WebSocket em tempo real
+-  Agente de IA (Groq)
+-  Exportação de PDF e envio por e-mail
+-  Frontend completo (React + Tailwind)
+-  Deploy em produção (Render + Vercel + Aiven)
 
 ---
 
